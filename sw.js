@@ -1,5 +1,5 @@
 // Таросвіт service worker: app shell works offline; readings always go to the network.
-const VERSION = "tarosvit-v0.1.0";
+const VERSION = "tarosvit-v0.1.1";
 const SHELL = ["/", "/index.html", "/app.css", "/app.js", "/manifest.webmanifest",
   "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png"];
 

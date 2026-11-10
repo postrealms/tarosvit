@@ -5,10 +5,10 @@
 /* Supabase project (the publishable key is public by design; data is protected by row-level security).
    Leave both empty to run without accounts. */
 const SB = {
-  url: "",
-  key: "",
+  url: "https://ubiqwtfigenqyqmlfafd.supabase.co",
+  key: "sb_publishable_61FCnviB1lgNJl1J2YHSuw_bAoK_FSg",
 };
-const VERSION = "0.1.0";
+const VERSION = "0.1.1";
 const accountsOn = !!(SB.url && SB.key);
 
 const $ = id => document.getElementById(id);
