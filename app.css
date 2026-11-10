@@ -65,6 +65,7 @@ a{color:var(--line)}
 .stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .frame{
   position:relative;aspect-ratio:7/12;
+  height:min(56vh, calc(72vw * 12 / 7));
   height:min(78cqh, calc(72cqw * 12 / 7));
   border-radius:14px;
   outline:1px solid color-mix(in srgb, var(--line) 38%, transparent);
@@ -105,6 +106,14 @@ body.live .frame .idle{display:none}
 .shutter{width:72px;height:72px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center}
 .shutter::after{content:"";width:56px;height:56px;border-radius:50%;background:var(--line);transition:scale .12s}
 .shutter:active::after{scale:.9}
+
+.install{
+  display:flex;align-items:center;gap:12px;
+  background:var(--veil);border:1px solid color-mix(in srgb, var(--line) 14%, transparent);border-radius:12px;padding:10px 12px;
+}
+.install p{margin:0;flex:1;min-width:0;font-size:13px;color:var(--ink)}
+.install .btn{padding:8px 14px;font-size:13px;white-space:nowrap}
+.install .x{font-size:22px;line-height:1;color:var(--mute);padding:4px 6px}
 
 /* ---------- sheets: reading, history, account ---------- */
 .sheet{flex:1;min-height:0;overflow-y:auto;padding:8px var(--gut-r) 24px var(--gut-l)}

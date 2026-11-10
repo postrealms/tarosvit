@@ -8,7 +8,7 @@ const SB = {
   url: "https://ubiqwtfigenqyqmlfafd.supabase.co",
   key: "sb_publishable_61FCnviB1lgNJl1J2YHSuw_bAoK_FSg",
 };
-const VERSION = "0.1.1";
+const VERSION = "0.1.2";
 const accountsOn = !!(SB.url && SB.key);
 
 const $ = id => document.getElementById(id);
@@ -390,6 +390,7 @@ let pendingEmail = "", resendTimer = null;
 function authError(e){
   const c = String(e.code || "") + " " + String(e.message || "");
   if(e.status === 429 || /rate.?limit/i.test(c)) return "Забагато листів за короткий час. Спробуйте за кілька хвилин.";
+  if(/not authorized/i.test(c)) return "Лист не надіслано: тестова пошта Supabase пише лише на адресу власника проєкту. Потрібно підключити свій SMTP.";
   if(/otp|token|expired|invalid.*(code|token)/i.test(c) || e.status === 403) return "Код не підійшов або вже застарів. Спробуйте ще раз.";
   if(/email/i.test(c)) return "Перевірте адресу email.";
   return navigator.onLine ? "Сталася помилка. Спробуйте ще раз." : "Схоже, немає інтернету.";
@@ -479,6 +480,37 @@ function openAccount(lead){
 }
 $("accBtn").addEventListener("click", () => openAccount());
 $("accountBack").addEventListener("click", () => { pending = null; show(returnView === "account" ? "camera" : returnView); });
+
+/* ---------- install to the home screen ---------- */
+let deferredPrompt = null, installMode = null;   // "prompt" (Android/desktop Chrome), "ios", "menu" (other Android browsers)
+const isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const isAndroid = () => /android/i.test(navigator.userAgent);
+const INSTALL_TEXT = {
+  prompt:"Встановіть Таросвіт на головний екран: відкривається як застосунок.",
+  ios:"Щоб встановити на iPhone: натисніть «Поділитися» в Safari, потім «На початковий екран».",
+  menu:"Щоб встановити: відкрийте меню браузера і виберіть «Встановити застосунок» або «Додати на головний екран».",
+};
+function renderInstall(){
+  if(!installMode || isStandalone() || ls.get("tarosvit.installDismissed")){ $("installBar").hidden = true; return; }
+  $("installText").textContent = INSTALL_TEXT[installMode];
+  $("installBtn").hidden = installMode !== "prompt";
+  $("installBar").hidden = false;
+}
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); deferredPrompt = e; installMode = "prompt"; renderInstall(); });
+$("installBtn").addEventListener("click", async () => {
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice.catch(()=>{});
+  deferredPrompt = null; installMode = null; renderInstall();
+});
+$("installClose").addEventListener("click", () => { ls.set("tarosvit.installDismissed", "1"); renderInstall(); });
+window.addEventListener("appinstalled", () => { installMode = null; renderInstall(); });
+if(!isStandalone()){
+  if(isIOS()){ installMode = "ios"; renderInstall(); }
+  // Android browsers that never offer the install prompt: explain the menu route instead
+  else if(isAndroid()) setTimeout(() => { if(!installMode){ installMode = "menu"; renderInstall(); } }, 4000);
+}
 
 /* ---------- start ---------- */
 $("ver").textContent = VERSION;
