@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Таросвіт</title>
+<meta name="description" content="Тлумачення карт таро по фото: сфотографуйте карту в рамці та отримайте її значення.">
+<meta name="theme-color" content="#14111f">
+<meta name="color-scheme" content="dark">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+
+<div class="splash" id="splash" aria-hidden="true">
+  <div class="in">
+    <span class="glyph"></span>
+    <span class="name">Таросвіт</span>
+    <span class="tag">тлумачення карт таро</span>
+  </div>
+</div>
+
+<!-- Access code for testers (shown only when the server asks for it) -->
+<div class="gate" id="gate" hidden>
+  <form class="panel" id="gateForm">
+    <h1 class="card-name">Код доступу</h1>
+    <p class="note">Застосунок у закритому тестуванні. Введіть код, який ви отримали разом із посиланням.</p>
+    <input class="field" id="gateInput" type="text" autocomplete="off" autocapitalize="off" required aria-label="Код доступу">
+    <button class="btn" type="submit">Увійти</button>
+  </form>
+</div>
+
+<header class="bar">
+  <span class="brand">Таросвіт</span>
+  <button class="acc" id="accBtn" type="button" hidden>Увійти</button>
+</header>
+
+<main class="stage" id="stage">
+  <video id="video" playsinline muted autoplay hidden></video>
+  <div class="frame" id="frame">
+    <i></i><i></i><i></i><i></i>
+    <span class="top">верх карти</span>
+    <span class="axis"></span>
+    <span class="idle">Натисніть кнопку внизу, відкриється камера телефона</span>
+  </div>
+  <div class="hint">Тримайте телефон вертикально, карта в рамці</div>
+</main>
+
+<section class="controls" id="controls">
+  <input class="field" id="question" type="text" maxlength="200" placeholder="Ваше питання до карти (необов’язково)" autocomplete="off">
+  <div class="row">
+    <button class="side" id="pick" type="button">З галереї</button>
+    <button class="shutter" id="shutter" type="button" aria-label="Сфотографувати карту"></button>
+    <button class="side end" id="openHist" type="button">Історія</button>
+  </div>
+  <input id="fileCam" type="file" accept="image/*" capture="environment" hidden>
+  <input id="fileGal" type="file" accept="image/*" hidden>
+</section>
+
+<section class="sheet" id="reading" hidden>
+  <div class="inner">
+    <div class="head">
+      <img class="shot" id="shot" alt="Ваше фото карти">
+      <div>
+        <h1 class="card-name" id="cardName">Дивлюсь на карту</h1>
+        <div class="card-pos" id="cardPos"></div>
+      </div>
+    </div>
+    <div class="asked" id="asked" hidden></div>
+    <div class="text" id="text"></div>
+    <div class="acts">
+      <button class="btn" id="again" type="button">Нова карта</button>
+      <button class="side" id="toHist" type="button">Історія</button>
+      <button class="side danger" id="del" type="button" hidden>Видалити</button>
+    </div>
+    <p class="note">Тлумачення створює ШІ. Це привід для роздумів, а не порада щодо здоров’я, грошей чи права.</p>
+  </div>
+</section>
+
+<section class="sheet" id="history" hidden>
+  <div class="inner">
+    <h1 class="card-name">Історія</h1>
+    <p class="note" id="histNote"></p>
+    <div class="list" id="list"></div>
+    <div class="acts"><button class="btn" id="histBack" type="button">До камери</button></div>
+  </div>
+</section>
+
+<section class="sheet" id="account" hidden>
+  <div class="inner">
+    <h1 class="card-name" id="accTitle">Акаунт</h1>
+    <p class="note" id="accLead"></p>
+
+    <!-- signed out: email, then the 6-digit code from the email -->
+    <form class="panel" id="accStep1" hidden>
+      <label class="lbl" for="accEmail">Email</label>
+      <input class="field" id="accEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" required placeholder="you@example.com">
+      <button class="btn" id="accSend" type="submit">Надіслати код</button>
+    </form>
+    <form class="panel" id="accStep2" hidden>
+      <p class="note" id="accSentTo"></p>
+      <label class="lbl" for="accCode">Код з листа</label>
+      <input class="field code" id="accCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" required placeholder="000000">
+      <button class="btn" id="accVerify" type="submit">Підтвердити</button>
+      <div class="acts">
+        <button class="side" id="accResend" type="button">Надіслати ще раз</button>
+        <button class="side" id="accOther" type="button">Інший email</button>
+      </div>
+    </form>
+
+    <!-- signed in -->
+    <div class="panel" id="accIn" hidden>
+      <div><div class="lbl">Ви увійшли як</div><div id="accWho"></div></div>
+      <div><div class="lbl">Сьогодні</div><div id="accUsage">—</div></div>
+      <div class="acts">
+        <button class="btn" id="accSignout" type="button">Вийти</button>
+        <button class="side danger" id="accDelete" type="button">Видалити акаунт</button>
+      </div>
+    </div>
+
+    <p class="status" id="accStatus" role="status"></p>
+    <div class="acts"><button class="side" id="accountBack" type="button">Назад</button></div>
+    <p class="note"><a href="/privacy.html">Політика конфіденційності</a> · версія <span id="ver"></span></p>
+  </div>
+</section>
+
+<script src="/app.js" defer></script>
+</body>
+</html>

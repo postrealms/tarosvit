@@ -1,0 +1,8 @@
+{
+  "name": "tarosvit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Таросвіт — тлумачення карт таро по фото (PWA)",
+  "engines": { "node": ">=18" }
+}
